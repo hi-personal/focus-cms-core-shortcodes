@@ -1,16 +1,33 @@
 {
     "name": "focus-cms/focus-cms-core-shortcodes",
     "type": "focus-module",
-
+    "description": "Core shortcodes module for Focus CMS.",
+    "keywords": [
+        "focus-cms",
+        "module",
+        "shortcodes",
+        "laravel"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "István Hatala",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
     "autoload": {
         "psr-4": {
             "Modules\\FocusCmsCoreShortcodes\\": ""
         }
     },
-
     "extra": {
         "module": {
             "name": "FocusCmsCoreShortcodes"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
