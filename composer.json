@@ -1,0 +1,16 @@
+{
+    "name": "focus-cms/focus-cms-core-shortcodes",
+    "type": "focus-module",
+
+    "autoload": {
+        "psr-4": {
+            "Modules\\FocusCmsCoreShortcodes\\": ""
+        }
+    },
+
+    "extra": {
+        "module": {
+            "name": "FocusCmsCoreShortcodes"
+        }
+    }
+}
