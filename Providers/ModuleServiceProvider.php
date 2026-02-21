@@ -17,6 +17,8 @@ use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\ImageShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\GalleryShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\FileShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\WidgetShortcode;
+use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\UrlShortcode;
+use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\LinkShortcode;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -45,6 +47,8 @@ class ModuleServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->registerShortcodes();
+
         if (!Schema::hasTable('options')) {
             return;
         }
@@ -55,7 +59,6 @@ class ModuleServiceProvider extends ServiceProvider
         $this->registerMigrations();
         $this->registerCommands();
         $this->registerBladeComponents();
-        $this->registerShortcodes();
     }
 
 
@@ -73,8 +76,11 @@ class ModuleServiceProvider extends ServiceProvider
          * FONTOS: sorrend számít
          * CodeShortcode előbb fusson, hogy a többi shortcode ne fusson code blockon belül
          */
-
         $registry->register(new CodeShortcode());
+
+        $registry->register(new UrlShortcode());
+
+        $registry->register(new LinkShortcode());
 
         $registry->register(new HtmlShortcode());
 
