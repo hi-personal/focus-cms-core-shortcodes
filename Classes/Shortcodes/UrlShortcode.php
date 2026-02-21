@@ -6,89 +6,73 @@ use App\Services\Contracts\DynamicShortcodeInterface;
 
 class UrlShortcode implements DynamicShortcodeInterface
 {
-    /**
-     * pattern
-     *
-     * {url path}
-     * {url path="..."}
-     * {url route="name" slug="value"}
-     */
     public function pattern(): string
     {
         return '/\{url(?:\s+([^}]+))?\}/';
     }
 
-    /**
-     * render
-     */
     public function render(array $matches): string
     {
-        $attributesString = $matches[1] ?? '';
+        $text = trim($matches[1] ?? '');
 
-        if (empty($attributesString)) {
+        if ($text === '') {
             return '';
         }
 
         /*
-         * attribútumok parse
+         * route="..."
          */
-        $attributes = $this->parseAttributes($attributesString);
+        if (preg_match('/route="([^"]+)"/', $text, $m)) {
 
-        /*
-         * route alapú
-         */
-        if (isset($attributes['route'])) {
+            $route = $m[1];
 
-            $routeName = $attributes['route'];
+            $params = [];
 
-            unset($attributes['route']);
+            preg_match_all(
+                '/([\w\-]+)="([^"]*)"/',
+                $text,
+                $paramMatches,
+                PREG_SET_ORDER
+            );
+
+            foreach ($paramMatches as $match) {
+
+                if ($match[1] !== 'route') {
+
+                    $params[$match[1]] = $match[2];
+
+                }
+            }
 
             try {
 
-                return route($routeName, $attributes);
+                return route($route, $params);
 
             } catch (\Throwable $e) {
 
                 return '';
-
             }
         }
 
         /*
-         * path attribútum
+         * path="..."
          */
-        if (isset($attributes['path'])) {
+        if (preg_match('/path="([^"]+)"/', $text, $m)) {
 
-            return url($attributes['path']);
+            return url($m[1]);
 
         }
 
         /*
-         * shorthand: {url categories/test}
+         * shorthand first token only
+         * removes .class, @attr, #id
          */
-        return url(trim($attributesString));
-    }
+        if (preg_match('/^([^\s\.\@\#]+)/', $text, $m)) {
 
-    /**
-     * attribútum parser
-     */
-    protected function parseAttributes(string $text): array
-    {
-        $attributes = [];
-
-        preg_match_all(
-            '/([\w\-]+)="([^"]*)"/',
-            $text,
-            $matches,
-            PREG_SET_ORDER
-        );
-
-        foreach ($matches as $match) {
-
-            $attributes[$match[1]] = $match[2];
+            return url($m[1]);
 
         }
 
-        return $attributes;
+        return '';
     }
 }

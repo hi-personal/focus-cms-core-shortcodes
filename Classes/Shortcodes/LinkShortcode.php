@@ -131,26 +131,34 @@ class LinkShortcode implements DynamicShortcodeInterface
         $attributes = [];
 
         /*
-         * id
-         */
+        * ID
+        */
         if (preg_match('/#([\w\-\[\]]+)/', $text, $m)) {
 
             $attributes['id'] = $m[1];
+
         }
 
         /*
-         * class
-         */
-        if (preg_match_all('/@([\w\-\:\.]+)\(([^)]*)\)/', $text, $m)) {
+        * CLASS (.class syntax)
+        */
+        if (preg_match_all('/\.([\w\-\!\:\[\]]+)/', $text, $m)) {
 
             $attributes['class'] = implode(' ', $m[1]);
+
         }
 
         /*
-         * @attr(value)
-         */
+        * @attr(value) syntax
+        * supports:
+        * @target()
+        * @rel(nofollow)
+        * @x-data(...)
+        * @:class(...)
+        * @data-id(123)
+        */
         if (preg_match_all(
-            '/@([\w\-]+)(?:\(([^)]*)\))?/',
+            '/@([\w\-\:\.]+)(?:\(([^)]*)\))?/',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -160,15 +168,30 @@ class LinkShortcode implements DynamicShortcodeInterface
 
                 $name = $match[1];
 
-                $value = $match[2] ?: true;
+                $value = $match[2] ?? null;
 
+                /*
+                * target default handling
+                */
                 if ($name === 'target') {
 
                     $attributes['target'] = $value ?: '_blank';
 
+                    continue;
+
+                }
+
+                /*
+                * boolean attribute
+                */
+                if ($value === null || $value === '') {
+
+                    $attributes[$name] = $name;
+
                 } else {
 
                     $attributes[$name] = $value;
+
                 }
             }
         }
