@@ -141,7 +141,7 @@ class LinkShortcode implements DynamicShortcodeInterface
         /*
          * class
          */
-        if (preg_match_all('/\.([\w\-\[\]]+)/', $text, $m)) {
+        if (preg_match_all('/@([\w\-\:\.]+)\(([^)]*)\)/', $text, $m)) {
 
             $attributes['class'] = implode(' ', $m[1]);
         }
