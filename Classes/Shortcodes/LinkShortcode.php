@@ -14,65 +14,44 @@ class LinkShortcode implements DynamicShortcodeInterface
 
     public function render(array $matches): string
     {
-        /*
-         * closing
-         */
         if ($matches[0] === '{e_link}') {
-
             return '</a>';
-
         }
 
-        $attributesString = $matches[1] ?? '';
+        $text = trim($matches[1] ?? '');
 
         $attributes = [];
 
-        $url = '';
+        /*
+         * URL kinyerés
+         */
+        $url = $this->extractUrl($text);
 
         /*
-         * shorthand URL (first param)
+         * HTML attribútumok kinyerés
          */
-        if ($attributesString && !str_contains($attributesString, '=')
-            && !str_contains($attributesString, '@')
-            && !str_contains($attributesString, '.')
-            && !str_contains($attributesString, '#')) {
+        $attributes = $this->extractAttributes($text);
 
-            $url = url(trim($attributesString));
-
-        } else {
-
-            $url = $this->extractUrl($attributesString);
-
-            $attributes = $this->extractAttributes($attributesString);
-        }
-
-        /*
-         * href kötelező
-         */
         $attributes['href'] = $url;
 
         /*
          * target default
          */
         if (!isset($attributes['target'])) {
-
             $attributes['target'] = '_blank';
-
         }
 
         /*
-         * rel auto security
+         * rel security
          */
-        if ($attributes['target'] === '_blank') {
-
-            if (!isset($attributes['rel'])) {
-
-                $attributes['rel'] = 'noopener noreferrer';
-
-            }
+        if (
+            $attributes['target'] === '_blank'
+            && !isset($attributes['rel'])
+        ) {
+            $attributes['rel'] = 'noopener noreferrer';
         }
 
-        return '<a'.ShortcodeHelper::buildAttributes($attributes).'>';
+        return '<a' . ShortcodeHelper::buildAttributes($attributes) . '>';
     }
 
 
@@ -97,9 +76,7 @@ class LinkShortcode implements DynamicShortcodeInterface
             foreach ($matches as $match) {
 
                 if ($match[1] !== 'route') {
-
                     $params[$match[1]] = $match[2];
-
                 }
             }
 
@@ -110,15 +87,13 @@ class LinkShortcode implements DynamicShortcodeInterface
          * path="..."
          */
         if (preg_match('/path="([^"]+)"/', $text, $m)) {
-
             return url($m[1]);
         }
 
         /*
-         * first token fallback
+         * shorthand
          */
-        if (preg_match('/^([^\s]+)/', trim($text), $m)) {
-
+        if (preg_match('/^([^\s\.\@\#]+)/', $text, $m)) {
             return url($m[1]);
         }
 
@@ -131,34 +106,24 @@ class LinkShortcode implements DynamicShortcodeInterface
         $attributes = [];
 
         /*
-        * ID
-        */
+         * ID
+         */
         if (preg_match('/#([\w\-\[\]]+)/', $text, $m)) {
-
             $attributes['id'] = $m[1];
-
         }
 
         /*
-        * CLASS (.class syntax)
-        */
+         * CLASS (.class)
+         */
         if (preg_match_all('/\.([\w\-\!\:\[\]]+)/', $text, $m)) {
-
             $attributes['class'] = implode(' ', $m[1]);
-
         }
 
         /*
-        * @attr(value) syntax
-        * supports:
-        * @target()
-        * @rel(nofollow)
-        * @x-data(...)
-        * @:class(...)
-        * @data-id(123)
-        */
+         * @attr("value")
+         */
         if (preg_match_all(
-            '/@([\w\-\:\.]+)(?:\(([^)]*)\))?/',
+            '/@([\w\-\:\.]+)\("([^"]*)"\)/',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -167,31 +132,13 @@ class LinkShortcode implements DynamicShortcodeInterface
             foreach ($matches as $match) {
 
                 $name = $match[1];
+                $value = $match[2];
 
-                $value = $match[2] ?? null;
-
-                /*
-                * target default handling
-                */
                 if ($name === 'target') {
-
                     $attributes['target'] = $value ?: '_blank';
-
-                    continue;
-
                 }
-
-                /*
-                * boolean attribute
-                */
-                if ($value === null || $value === '') {
-
-                    $attributes[$name] = $name;
-
-                } else {
-
+                else {
                     $attributes[$name] = $value;
-
                 }
             }
         }

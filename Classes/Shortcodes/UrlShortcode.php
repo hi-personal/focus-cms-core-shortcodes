@@ -20,7 +20,7 @@ class UrlShortcode implements DynamicShortcodeInterface
         }
 
         /*
-         * route="..."
+         * route
          */
         if (preg_match('/route="([^"]+)"/', $text, $m)) {
 
@@ -38,39 +38,25 @@ class UrlShortcode implements DynamicShortcodeInterface
             foreach ($paramMatches as $match) {
 
                 if ($match[1] !== 'route') {
-
                     $params[$match[1]] = $match[2];
-
                 }
             }
 
-            try {
-
-                return route($route, $params);
-
-            } catch (\Throwable $e) {
-
-                return '';
-            }
+            return route($route, $params);
         }
 
         /*
-         * path="..."
+         * path
          */
         if (preg_match('/path="([^"]+)"/', $text, $m)) {
-
             return url($m[1]);
-
         }
 
         /*
-         * shorthand first token only
-         * removes .class, @attr, #id
+         * shorthand
          */
         if (preg_match('/^([^\s\.\@\#]+)/', $text, $m)) {
-
             return url($m[1]);
-
         }
 
         return '';
