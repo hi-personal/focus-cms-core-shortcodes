@@ -3,6 +3,7 @@
 namespace Modules\FocusCmsCoreShortcodes\Classes\Shortcodes;
 
 use App\Services\Contracts\DynamicShortcodeInterface;
+use Carbon\Carbon;
 
 class DateShortcode implements DynamicShortcodeInterface
 {
@@ -13,40 +14,86 @@ class DateShortcode implements DynamicShortcodeInterface
 
     public function render(array $matches): string
     {
-        $param = trim($matches[1] ?? '');
+        $paramString = trim($matches[1] ?? '');
+
+        $attributes = $this->parseAttributes($paramString);
 
         /*
-         * default format
+         * Alapérték: now()
          */
-        $format = 'Y';
+        $date = Carbon::now();
 
         /*
-         * format="..."
+         * Fix dátum
          */
-        if (preg_match('/format="([^"]+)"/', $param, $m)) {
+        if (!empty($attributes['date'])) {
 
-            $format = $m[1];
-
-        }
-        /*
-         * shorthand {date Y-m-d}
-         */
-        elseif (!empty($param)) {
-
-            $format = $param;
-
+            try {
+                $date = Carbon::parse($attributes['date']);
+            } catch (\Exception $e) {
+                return '';
+            }
         }
 
         /*
-         * biztonsági whitelist
-         * csak engedélyezett karakterek
+         * Diff mód
+         */
+        if (!empty($attributes['diff'])) {
+
+            try {
+
+                $from = Carbon::parse($attributes['diff']);
+
+                return (string) $from->diffInYears(Carbon::now());
+
+            } catch (\Exception $e) {
+
+                return '';
+
+            }
+        }
+
+        /*
+         * Formátum
+         */
+        $format = $attributes['format'] ?? 'Y';
+
+        /*
+         * Biztonsági whitelist
          */
         if (!preg_match('/^[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU\-:\.\/\s]+$/', $format)) {
-
             return '';
-
         }
 
-        return date($format);
+        return $date->format($format);
+    }
+
+
+    protected function parseAttributes(string $text): array
+    {
+        $attributes = [];
+
+        if (preg_match_all(
+            '/([\w\-]+)="([^"]*)"/',
+            $text,
+            $matches,
+            PREG_SET_ORDER
+        )) {
+
+            foreach ($matches as $match) {
+
+                $attributes[$match[1]] = $match[2];
+
+            }
+        }
+
+        /*
+         * shorthand: {date Y-m-d}
+         */
+        if (empty($attributes) && !empty($text)) {
+            $attributes['format'] = trim($text);
+        }
+
+        return $attributes;
     }
 }
