@@ -77,20 +77,14 @@ class ModuleServiceProvider extends ServiceProvider
          * CodeShortcode előbb fusson, hogy a többi shortcode ne fusson code blockon belül
          */
         $registry->register(new CodeShortcode());
-
         $registry->register(new UrlShortcode());
-
         $registry->register(new LinkShortcode());
-
         $registry->register(new HtmlShortcode());
-
         $registry->register(new ImageShortcode());
-
         $registry->register(new GalleryShortcode());
-
         $registry->register(new FileShortcode());
-
         $registry->register(new WidgetShortcode());
+        $registry->register(new DateShortcode());
     }
 
 
@@ -109,7 +103,6 @@ class ModuleServiceProvider extends ServiceProvider
         }
 
         foreach (glob($path.'/*.php') as $file) {
-
             $key = pathinfo($file, PATHINFO_FILENAME);
 
             $this->mergeConfigFrom(

@@ -106,24 +106,24 @@ class LinkShortcode implements DynamicShortcodeInterface
         $attributes = [];
 
         /*
-         * ID
-         */
+        * ID
+        */
         if (preg_match('/#([\w\-\[\]]+)/', $text, $m)) {
             $attributes['id'] = $m[1];
         }
 
         /*
-         * CLASS (.class)
-         */
+        * class (.class syntax)
+        */
         if (preg_match_all('/\.([\w\-\!\:\[\]]+)/', $text, $m)) {
             $attributes['class'] = implode(' ', $m[1]);
         }
 
         /*
-         * @attr("value")
-         */
+        * @attr("value") — MULTILINE SAFE
+        */
         if (preg_match_all(
-            '/@([\w\-\:\.]+)\("([^"]*)"\)/',
+            '/@([\w\-\:\.]+)\("([\s\S]*?)"\)/',
             $text,
             $matches,
             PREG_SET_ORDER
