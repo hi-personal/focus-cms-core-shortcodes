@@ -13,6 +13,7 @@ use App\Services\ShortcodeRegistry;
 
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\HtmlShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\CodeShortcode;
+use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\DateShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\ImageShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\GalleryShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\FileShortcode;
