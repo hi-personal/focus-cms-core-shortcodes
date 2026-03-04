@@ -1,13 +1,14 @@
 {
-  "Modules/SampleModule/resources/css/module.css": {
-    "file": "css/module-D5yaabX3.css",
-    "src": "Modules/SampleModule/resources/css/module.css",
+  "Modules/FocusCmsCoreShortcodes/resources/css/module.css": {
+    "file": "assets/module-DP2rzg_V.js",
+    "name": "module",
+    "src": "Modules/FocusCmsCoreShortcodes/resources/css/module.css",
     "isEntry": true
   },
-  "Modules/SampleModule/resources/js/module.js": {
-    "file": "assets/module-Cu7UItrN.js",
+  "Modules/FocusCmsCoreShortcodes/resources/js/module.js": {
+    "file": "assets/module-l0sNRNKZ.js",
     "name": "module",
-    "src": "Modules/SampleModule/resources/js/module.js",
+    "src": "Modules/FocusCmsCoreShortcodes/resources/js/module.js",
     "isEntry": true
   }
 }

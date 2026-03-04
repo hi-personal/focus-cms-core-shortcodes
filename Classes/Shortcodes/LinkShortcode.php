@@ -120,10 +120,10 @@ class LinkShortcode implements DynamicShortcodeInterface
         }
 
         /*
-        * @attr("value") — MULTILINE SAFE
+        * @attr(value) vagy @attr("value") — MULTILINE SAFE
         */
         if (preg_match_all(
-            '/@([\w\-\:\.]+)\("([\s\S]*?)"\)/',
+            '/@([\w\-\:\.]+)\((?:"([\s\S]*?)"|([^\)]+))\)/',
             $text,
             $matches,
             PREG_SET_ORDER
@@ -132,7 +132,11 @@ class LinkShortcode implements DynamicShortcodeInterface
             foreach ($matches as $match) {
 
                 $name = $match[1];
-                $value = $match[2];
+
+                /*
+                * value lehet quoted vagy unquoted
+                */
+                $value = $match[2] !== '' ? $match[2] : trim($match[3]);
 
                 if ($name === 'target') {
                     $attributes['target'] = $value ?: '_blank';
