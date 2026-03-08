@@ -54,16 +54,21 @@ class LinkShortcode implements DynamicShortcodeInterface
         return '<a' . ShortcodeHelper::buildAttributes($attributes) . '>';
     }
 
-
     protected function extractUrl(string $text): string
     {
+        /*
+         * full URL (http / https)
+         */
+        if (preg_match('~https?://[^\s]+~', $text, $m)) {
+            return $m[0];
+        }
+
         /*
          * route="..."
          */
         if (preg_match('/route="([^"]+)"/', $text, $m)) {
 
             $route = $m[1];
-
             $params = [];
 
             preg_match_all(
@@ -91,37 +96,37 @@ class LinkShortcode implements DynamicShortcodeInterface
         }
 
         /*
-         * shorthand
+         * shorthand path
          */
-        if (preg_match('/^([^\s\.\@\#]+)/', $text, $m)) {
+        if (preg_match('/^([^\s\@\#]+)/', $text, $m)) {
             return url($m[1]);
         }
 
         return '';
     }
 
-
     protected function extractAttributes(string $text): array
     {
         $attributes = [];
 
         /*
-        * ID
-        */
+         * ID
+         */
         if (preg_match('/#([\w\-\[\]]+)/', $text, $m)) {
             $attributes['id'] = $m[1];
         }
 
         /*
-        * class (.class syntax)
-        */
-        if (preg_match_all('/\.([\w\-\!\:\[\]]+)/', $text, $m)) {
+         * class (.class syntax)
+         * csak szóhatár után
+         */
+        if (preg_match_all('/(?:^|\s)\.([\w\-\!\:\[\]]+)/', $text, $m)) {
             $attributes['class'] = implode(' ', $m[1]);
         }
 
         /*
-        * @attr(value) vagy @attr("value") — MULTILINE SAFE
-        */
+         * @attr(value) vagy @attr("value")
+         */
         if (preg_match_all(
             '/@([\w\-\:\.]+)\((?:"([\s\S]*?)"|([^\)]+))\)/',
             $text,
@@ -133,15 +138,11 @@ class LinkShortcode implements DynamicShortcodeInterface
 
                 $name = $match[1];
 
-                /*
-                * value lehet quoted vagy unquoted
-                */
                 $value = $match[2] !== '' ? $match[2] : trim($match[3]);
 
                 if ($name === 'target') {
                     $attributes['target'] = $value ?: '_blank';
-                }
-                else {
+                } else {
                     $attributes[$name] = $value;
                 }
             }
