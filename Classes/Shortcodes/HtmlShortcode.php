@@ -1,9 +1,7 @@
 <?php
-
 namespace Modules\FocusCmsCoreShortcodes\Classes\Shortcodes;
 
 use App\Services\Contracts\DynamicShortcodeInterface;
-
 use Modules\FocusCmsCoreShortcodes\Classes\Support\ShortcodeHelper;
 
 class HtmlShortcode implements DynamicShortcodeInterface
@@ -15,7 +13,6 @@ class HtmlShortcode implements DynamicShortcodeInterface
     {
         return '/\{(div|a|p|span|i)(?:\s+([^}]+))?\}|\{e_(div|a|p|span|i)\}/';
     }
-
 
     /**
      * render
@@ -41,6 +38,8 @@ class HtmlShortcode implements DynamicShortcodeInterface
             $matches[2] ?? '';
 
         $attributes = [];
+
+        $langAttribute = null;
 
         if (!empty($attributesString)) {
 
@@ -73,6 +72,52 @@ class HtmlShortcode implements DynamicShortcodeInterface
 
                     $attributes[$match[1]] =
                         $match[2] ?: $match[1];
+
+                }
+            }
+
+            /*
+             * lang="en"
+             */
+            if (preg_match('/lang\s*=\s*"([^"]+)"/', $attributesString, $langMatch)) {
+
+                $langAttribute =
+                    trim($langMatch[1]);
+
+            }
+        }
+
+        /*
+         * URL első szegmens
+         */
+        $requestPath =
+            trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
+
+        $segments =
+            explode('/', $requestPath);
+
+        $currentLang =
+            $segments[0] ?? '';
+
+        /*
+         * nyelv ellenőrzés
+         */
+        if (!empty($langAttribute)) {
+
+            if ($currentLang !== $langAttribute) {
+
+                /*
+                 * hidden class hozzáadás
+                 */
+                if (!isset($attributes['class'])) {
+
+                    $attributes['class'] =
+                        'hidden';
+
+                } else {
+
+                    $attributes['class'] .=
+                        ' hidden';
 
                 }
             }
