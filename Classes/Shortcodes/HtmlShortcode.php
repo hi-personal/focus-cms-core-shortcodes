@@ -88,11 +88,6 @@ class HtmlShortcode implements DynamicShortcodeInterface
         }
 
         $currentLang = cms_locale();
-        dd([
-    'cms_locale' => cms_locale(),
-    'app_locale' => app()->getLocale(),
-    'lang_attribute' => $langAttribute,
-]);
 
         /*
          * nyelv ellenőrzés
