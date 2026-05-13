@@ -87,17 +87,7 @@ class HtmlShortcode implements DynamicShortcodeInterface
             }
         }
 
-        /*
-         * URL első szegmens
-         */
-        $requestPath =
-            trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
-
-        $segments =
-            explode('/', $requestPath);
-
-        $currentLang =
-            $segments[0] ?? '';
+        $currentLang = cms_locale();
 
         /*
          * nyelv ellenőrzés
