@@ -14,6 +14,7 @@ use App\Services\ShortcodeRegistry;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\HtmlShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\CodeShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\DateShortcode;
+use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\LangShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\ImageShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\GalleryShortcode;
 use Modules\FocusCmsCoreShortcodes\Classes\Shortcodes\FileShortcode;
@@ -86,6 +87,7 @@ class ModuleServiceProvider extends ServiceProvider
         $registry->register(new FileShortcode());
         $registry->register(new WidgetShortcode());
         $registry->register(new DateShortcode());
+        $registry->register(new LangShortcode());
     }
 
 
@@ -103,7 +105,8 @@ class ModuleServiceProvider extends ServiceProvider
             return;
         }
 
-        foreach (glob($path.'/*.php') as $file) {
+        foreach (glob($path . '/*.php') as $file) {
+
             $key = pathinfo($file, PATHINFO_FILENAME);
 
             $this->mergeConfigFrom(
@@ -204,9 +207,9 @@ class ModuleServiceProvider extends ServiceProvider
             return;
         }
 
-        foreach (glob($path.'/*.php') as $file) {
+        foreach (glob($path . '/*.php') as $file) {
 
-            $class = "Modules\\{$this->moduleName}\\Console\\Commands\\".basename($file, '.php');
+            $class = "Modules\\{$this->moduleName}\\Console\\Commands\\" . basename($file, '.php');
 
             if (class_exists($class)) {
                 $this->commands($class);
@@ -229,9 +232,9 @@ class ModuleServiceProvider extends ServiceProvider
             return;
         }
 
-        foreach (glob($path.'/*.php') as $file) {
+        foreach (glob($path . '/*.php') as $file) {
 
-            $class = "Modules\\{$this->moduleName}\\Classes\\Components\\".basename($file, '.php');
+            $class = "Modules\\{$this->moduleName}\\Classes\\Components\\" . basename($file, '.php');
 
             if (!class_exists($class)) {
                 continue;
