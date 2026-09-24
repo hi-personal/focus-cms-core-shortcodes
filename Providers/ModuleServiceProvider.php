@@ -57,7 +57,6 @@ class ModuleServiceProvider extends ServiceProvider
 
         $this->registerViews();
         $this->registerTranslations();
-        $this->registerRoutes();
         $this->registerMigrations();
         $this->registerCommands();
         $this->registerBladeComponents();
@@ -155,25 +154,6 @@ class ModuleServiceProvider extends ServiceProvider
 
         Lang::addNamespace($this->moduleNameLower, $path);
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | ROUTES
-    |--------------------------------------------------------------------------
-    */
-
-    protected function registerRoutes(): void
-    {
-        $web = base_path("Modules/{$this->moduleName}/routes/web.php");
-
-        if (!file_exists($web)) {
-            return;
-        }
-
-        Route::middleware(['web'])->group($web);
-    }
-
 
     /*
     |--------------------------------------------------------------------------
